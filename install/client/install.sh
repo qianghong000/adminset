@@ -5,12 +5,16 @@ cd "$( dirname "$0"  )"
 cur_dir=$(pwd)
 work_dir=/var/opt/adminset/client
 # 安装依赖包
-os=$(cat /proc/version)
-if (echo $os|grep centos) || (echo $os|grep 'Red Hat')
+#os=$(cat /proc/version)
+os=$(cat /etc/centos-release)
+if (echo $os|grep centos) || (echo $os|grep 'Red Hat') || (echo $os|grep 'CentOS')
 then
-    yum makecache fast
-    yum install -y epel-release
-    yum install -y gcc smartmontools dmidecode python-pip python-devel  libselinux-python dos2unix
+    yum install -y wget
+    mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo-bak
+    wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.163.com/.help/CentOS6-Base-163.repo
+    yum clean all &&yum makecache
+    yum install -y vim epel-release initscripts openssh-clients gcc smartmontools dmidecode python-pip python-devel  libselinux-python dos2unix scp
+    wget https://bootstrap.pypa.io/get-pip.py &&python get-pip.py
 elif (echo $os|grep Ubuntu)
 then
     apt-get update
@@ -38,7 +42,7 @@ mkdir -p $work_dir
 source /etc/profile
 
 echo "####config adminset agent####"
-if (echo $os|grep centos) || (echo $os|grep 'Red Hat')
+if (echo $os|grep centos) || (echo $os|grep 'Red Hat') || (echo $os|grep 'CentOS')
 then
     if (rpm -ql python|grep 2.6)
     then
